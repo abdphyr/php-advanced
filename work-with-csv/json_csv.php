@@ -37,6 +37,26 @@ class JsonToCsv
     fclose($csvFile);
   }
 
+  public static function jsonFileToCsv($jsonFilePath, $delimetr = ',')
+  {
+    $jsonFile = fopen($jsonFilePath, 'r');
+    $decodedJson = json_decode(fread($jsonFile, filesize($jsonFilePath)), true);
+    $csv = "";
+    $columns = self::getJsonAttributesAsCsvColumns($decodedJson);
+    $csv = $csv . implode($delimetr, $columns);
+
+    if (self::isAssociative($decodedJson)) {
+      $singleRowValue = self::getAsSingleRow($columns, $decodedJson);
+      return $csv . "\n" . implode($delimetr, $singleRowValue);
+    }
+    foreach ($decodedJson as $decodedJsonItem) {
+      $singleRowValue = self::getAsSingleRow($columns, $decodedJsonItem);
+      $csv = $csv . "\n" . implode($delimetr, $singleRowValue);
+    }
+    fclose($jsonFile);
+    return $csv;
+  }
+
   public static function jsonFileToCsvFile($jsonFilePath, $csvFilePath, $delimetr = ',')
   {
     $jsonFile = fopen($jsonFilePath, 'r');
