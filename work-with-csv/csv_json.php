@@ -28,6 +28,20 @@ class CsvToJson
     fclose($jsonFile);
   }
 
+  public static function csvFileToJson($csvFilePath)
+  {
+    $csvFile = fopen($csvFilePath, 'r');
+    $csvJson = [];
+    $columns = fgetcsv($csvFile);
+    while (!feof($csvFile)) {
+      $singleCsvRow = fgetcsv($csvFile);
+      $csvJsonItem = self::csvRowToJsonItem($singleCsvRow, $columns);
+      $csvJson[] = $csvJsonItem;
+    }
+    fclose($csvFile);
+    return json_encode($csvJson);
+  }
+
   public static function csvFileToJsonFile($csvFilePath, $jsonFilePath)
   {
     $csvFile = fopen($csvFilePath, 'r');
@@ -71,3 +85,6 @@ class CsvToJson
     return $csvJsonItem;
   }
 }
+
+
+echo CsvToJson::csvFileToJson('main.csv');
